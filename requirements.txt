@@ -3,11 +3,21 @@ pip>=9
 setuptools>=26
 twine
 wheel>=0.29
+python-dotenv
+psycopg2-binary
 
 # data science
+jupyterlab
+jupyter
 numpy
 pandas
 scikit-learn
+scikit-image
+scipy
+keras
+Keras-Preprocessing
+fbprophet
+
 # Trick to install the version of Tensorflow depending on your processor: darwin == Mac, ARM == M1
 tensorflow-macos==2.8.0; sys_platform == 'darwin' and 'ARM' in platform_version # Mac M-chips
 tensorflow==2.8.0; sys_platform == 'darwin' and 'ARM' not in platform_version # Mac Intel chips
@@ -31,3 +41,9 @@ six>=1.14
 joblib
 memoized-property
 termcolor
+
+# datawiz
+seaborn
+matplotlib
+matplotlib-inline
+plotly
