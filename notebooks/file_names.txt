@@ -1,0 +1,15 @@
+shops_sales		>>> shops_id_sales_pred
+shops_values		>>> shops_id_values_pred
+
+cats_sales		>>> cats_id_sales_pred
+cats_values		>>> cats_id_values_pred
+
+items_sales		>>> items_id_sales_pred
+items_values		>>> items_id_values_pred = 0
+
+cats_shops_sales	>>> cats_shops_id_sales_pred
+cats_shops_values	>>> cats_shops_id_values_pred = 0
+
+total_sales		>>> total_sales_pred
+total_values		>>> total_values_pred
+
