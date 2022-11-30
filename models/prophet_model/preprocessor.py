@@ -1,32 +1,69 @@
 
 import pandas as pd
 
-# column type to datetime
-sales_local_df["date"] = pd.to_datetime(sales_local_df.date, dayfirst=True)
+from models.data_sources.get_data import load_df
 
-# rename item_category_id to cat_id
-categories_local_df.rename(columns={'item_category_id': 'cat_id'}, inplace=True)
-items_local_df.rename(columns={'item_category_id': 'cat_id'}, inplace=True)
-sales_local_df.rename(columns={'item_category_id': 'cat_id'}, inplace=True)
+from models.params import CAT, ITEMS, SALES, TEST
 
-# merge test_local_df with item_df on item_id
-test_local_df = test_local_df.merge(items_local_df[['item_id', 'cat_id']], how='left', on='item_id')
+# Preprocess sales_train
+def prep_sales_df():
+    sales_df = load_df(SALES)
+    items_df = load_df(ITEMS)
 
-# merge items_local_df with sales_local_df on item_id
-sales_local_df = sales_local_df.merge(items_local_df[['item_id', 'cat_id']], on='item_id')
+    # column type to datetime
+    sales_df["date"] = pd.to_datetime(sales_df.date, dayfirst=True)
 
-# chage types
-sales_local_df['item_cnt_day'] = sales_local_df['item_cnt_day'].astype('int32')
-sales_local_df['date_block_num'] = sales_local_df['date_block_num'].astype('int32')
-sales_local_df['shop_id'] = sales_local_df['shop_id'].astype('int32')
-sales_local_df['item_id'] = sales_local_df['item_id'].astype('int32')
-sales_local_df['cat_id'] = sales_local_df['cat_id'].astype('int32')
-sales_local_df['item_price'] = sales_local_df['item_price'].astype('float32')
+    # merge sales_df with items_df on item_id
+    sales_df = sales_df.merge(items_df[['item_id', 'item_category_id']], how='left', on='item_id')
 
-# create final price column and remove negative values
-sales_local_df['final_price'] = sales_local_df.item_cnt_day * sales_local_df.item_price
-sales_local_df['final_price'] = sales_local_df['final_price'].astype('float32')
-sales_local_df.loc[sales_local_df['final_price'] < 0, ['final_price']] = 0
+    # rename item_category_id to cat_id
+    sales_df.rename(columns={'item_category_id': 'cat_id'}, inplace=True)
 
-# sort by date
-sales_local_df.sort_values("date", inplace=True)
+    # create final price column and remove negative values
+    sales_df['final_price'] = sales_df.item_cnt_day * sales_df.item_price
+    sales_df.loc[sales_df['final_price'] < 0, ['final_price']] = 0
+
+    # chage types
+    sales_df = sales_df.astype({'item_cnt_day':'int32',
+                                'date_block_num':'int32',
+                                'shop_id':'int32',
+                                'cat_id':'int32',
+                                'item_id':'int32',
+                                'item_price':'float32',
+                                'final_price':'float32'})
+
+    # sort by date
+    sales_df.sort_values("date", inplace=True)
+    return sales_df
+
+# Preprocess item_categories_en
+def prep_categories_df():
+    # rename item_category_id to cat_id
+    categories_df = load_df(CAT)
+    categories_df.rename(columns={'item_category_id': 'cat_id'}, inplace=True)
+    return categories_df
+
+# Preprocess items_en
+def prep_items_df():
+    # rename item_category_id to cat_id
+    items_df = load_df(ITEMS)
+    items_df.rename(columns={'item_category_id': 'cat_id'}, inplace=True)
+    return items_df
+
+# Preprocess test
+def prep_test_df():
+    # merge test_df with item_df on item_id
+    test_df = load_df(TEST)
+    items_df = load_df(ITEMS)
+    test_df = test_df.merge(items_df[['item_id', 'item_category_id']], how='left', on='item_id')
+    test_df.rename(columns={'item_category_id': 'cat_id'}, inplace=True)
+    return test_df
+
+#x = prep_sales_df()
+#print(x)
+#x = prep_categories_df()
+#print(x)
+#x = prep_items_df()
+#print(x)
+#x = prep_test_df()
+#print(x)

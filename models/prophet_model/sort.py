@@ -1,23 +1,29 @@
+
+import numpy as np
 import pandas as pd
 
-from models.prophet_model.params import freq_analysis
+from models.prophet_model.preprocessor import (
+    prep_sales_df, prep_categories_df, prep_items_df, prep_test_df
+)
 
-# sort the Data Frame by "types" to be used in the analysis
-def sort_sales(df: pd.core.frame.DataFrame, name: str, feature: str) -> pd.core.frame.DataFrame:
+# from models.params import freq_analysis
+
+# sort the Data Frame by shop/categore/item to be used in the analysis
+def sort_sales(df_id: str, feature: str, period: str) -> pd.DataFrame:
     """
-    Sort the Data Frame by "type(name)" to be used in the analysis.
+    Sort the Data Frame by shop/categore/item to be used in the analysis.
     df: Data Frame.
-    name: shop, cat, item.
+    name: shop_id, cat_id, item_id.
     feature: item_cnt_day, final_price.
+    Period: {day: d, week: w, month: m}.
     """
+    df = pd.pivot_table(
+        prep_sales_df(), values=feature,
+        index=[df_id], columns=['date'],
+        aggfunc=np.sum
+    )
+    df = df.fillna(0).T
+    df.columns = map(lambda i: df_id+"_"+str(i), df.columns)
+    return df.resample(period).sum()
 
-    df_feature = pd.DataFrame()
-
-    for id in range(df.shape[0]):
-        name_id = f'{name}_id_{id}'
-        df = sales_local_df[sales_local_df[f'{name}_id'] == id]
-        df = df.resample(freq_analysis, on='date').sum()[[feature]]
-        df.rename(columns = {feature:name_id}, inplace=True)
-        df_feature = pd.concat([df_feature, df], axis=1)
-
-    return df_feature
+print(sort_sales('item_id', 'item_cnt_day', 'm'))
