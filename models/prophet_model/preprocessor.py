@@ -59,11 +59,16 @@ def prep_test_df():
     test_df.rename(columns={'item_category_id': 'cat_id'}, inplace=True)
     return test_df
 
-#x = prep_sales_df()
-#print(x)
-#x = prep_categories_df()
-#print(x)
-#x = prep_items_df()
-#print(x)
-#x = prep_test_df()
-#print(x)
+#check unique values from test_df and remove from sales_df
+def prep_clean_sales_df():
+    test_df = prep_test_df()
+    unique_shops = test_df['shop_id'].unique()
+    unique_cats = test_df['cat_id'].unique()
+    unique_item = test_df['item_id'].unique()
+    sales_df = prep_sales_df()
+    sales_df = sales_df[
+        sales_df['shop_id'].isin(unique_shops) &
+        sales_df['cat_id'].isin(unique_cats) &
+        sales_df['item_id'].isin(unique_item)
+        ]
+    return sales_df

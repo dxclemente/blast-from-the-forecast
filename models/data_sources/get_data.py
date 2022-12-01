@@ -5,16 +5,18 @@ from sqlalchemy import create_engine
 import pandas as pd
 
 from models.params import user, password, host, port, db
-from models.params import REMOTE, DATA_PATH
+from models.params import SOURCE, DATA_PATH
 
 # A long string that contains the necessary Postgres login information
 def postgres_login():
-    postgres_str = ('postgresql://{username}:{password}@{ipaddress}:{port}/{dbname}'
-                    .format(username=user,
-                            password=password,
-                            ipaddress=host,
-                            port=port,
-                            dbname=db))
+    postgres_str = (
+        'postgresql://{username}:{password}@{ipaddress}:{port}/{dbname}'
+        .format(username=user,
+                password=password,
+                ipaddress=host,
+                port=port,
+                dbname=db)
+        )
     cnx = create_engine(postgres_str)
     return cnx
 
@@ -33,8 +35,7 @@ def read_path(file):
 
 # load remote or local file
 def load_df(file):
-    if REMOTE == 'True':
-        print('remote = ',REMOTE)
+    if SOURCE == 'remote':
         return read_sql(file)
 
     else:
