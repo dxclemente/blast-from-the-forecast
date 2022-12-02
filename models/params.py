@@ -34,6 +34,8 @@ LOAD_DF = "no" # or "load" the the data from path
 PATH_DF = "raw_data/prophet_df"
 STREAMLIT_PATH = "../raw_data/prophet_df"
 
+CV_PATH = "../raw_data/cross_val"
+MOODELS_PATH = "../raw_data/prophet"
 
 # If there is no local sales_df data,
 # Load raw data from remote or local path to preprocess
